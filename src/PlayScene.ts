@@ -114,7 +114,6 @@ class PlayScene extends Phaser.Scene {
 
   createEvents(): void {
     this.input.keyboard.on('keydown-SPACE', () => {
-      console.log('dva');
       switch (this.state) {
         case State.StateGenerate:
           this.generateStep++;
