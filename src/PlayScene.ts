@@ -1,5 +1,6 @@
 import Phaser from "phaser";
 import { Colors } from "./Colors";
+import { numberToDigits, randomNumber } from "./utils";
 
 class PlayScene extends Phaser.Scene {
   private txtCorrectNumber: Phaser.GameObjects.Text;
@@ -9,6 +10,17 @@ class PlayScene extends Phaser.Scene {
   private txtNumber4: Phaser.GameObjects.Text;
   private txtNumber5: Phaser.GameObjects.Text;
   private txtNumber6: Phaser.GameObjects.Text;
+
+  private correctNumber: number;
+  private number1: number;
+  private number2: number;
+  private number3: number;
+  private number4: number;
+  private number5: number;
+  private number6: number;
+
+  private randomInterval: number = 75;
+  private currentInterval: number = 0;
 
   constructor() {
     super('PlayScene');
@@ -31,6 +43,26 @@ class PlayScene extends Phaser.Scene {
   }
 
   update(time: number, delta: number): void {
+    this.currentInterval += delta;
+    if (this.currentInterval >= this.randomInterval) {
+      this.currentInterval = 0;
+
+      this.correctNumber = randomNumber(1, 999);
+      this.txtCorrectNumber.setText(numberToDigits(this.correctNumber, 3).join(' '));
+
+      this.number1 = randomNumber(1, 9);
+      this.txtNumber1.setText(numberToDigits(this.number1, 1).join(' '));
+      this.number2 = randomNumber(1, 9);
+      this.txtNumber2.setText(numberToDigits(this.number2, 1).join(' '));
+      this.number3 = randomNumber(1, 9);
+      this.txtNumber3.setText(numberToDigits(this.number3, 1).join(' '));
+      this.number4 = randomNumber(1, 9);
+      this.txtNumber4.setText(numberToDigits(this.number4, 1).join(' '));
+      this.number5 = randomNumber(2, 4) * 5;
+      this.txtNumber5.setText(numberToDigits(this.number5, 2).join(' '));
+      this.number6 = randomNumber(1, 4) * 25;
+      this.txtNumber6.setText(numberToDigits(this.number6, 3).map((el, idx) => idx > 0 || el > 0 ? el : ' ').join(' '));
+    }
   }
 
   createNumbers(): void {
