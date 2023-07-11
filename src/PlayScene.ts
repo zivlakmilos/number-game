@@ -2,6 +2,12 @@ import Phaser from "phaser";
 import { Colors } from "./Colors";
 import { numberToDigits, randomNumber } from "./utils";
 
+enum State {
+  StateGenerate,
+  StateGame,
+  StateSolve,
+}
+
 class PlayScene extends Phaser.Scene {
   private txtCorrectNumber: Phaser.GameObjects.Text;
   private txtNumber1: Phaser.GameObjects.Text;
@@ -22,6 +28,9 @@ class PlayScene extends Phaser.Scene {
   private randomInterval: number = 75;
   private currentInterval: number = 0;
 
+  private state: State = State.StateGenerate;
+  private generateStep: number = 0;
+
   constructor() {
     super('PlayScene');
   }
@@ -40,29 +49,78 @@ class PlayScene extends Phaser.Scene {
   create(): void {
     this.createNumbers();
     this.createResultBox();
+    this.createEvents();
   }
 
   update(time: number, delta: number): void {
-    this.currentInterval += delta;
-    if (this.currentInterval >= this.randomInterval) {
-      this.currentInterval = 0;
+    switch (this.state) {
+      case State.StateGenerate:
+        this.updateGenerate(delta);
+        break;
+      case State.StateGame:
+        break;
+      case State.StateSolve:
+        break;
+    }
+  }
 
+  updateGenerate(delta: number): void {
+    this.currentInterval += delta;
+    if (this.currentInterval < this.randomInterval) {
+      return;
+    }
+
+    this.currentInterval = 0;
+
+    if (this.generateStep < 1) {
       this.correctNumber = randomNumber(1, 999);
       this.txtCorrectNumber.setText(numberToDigits(this.correctNumber, 3).join(' '));
+    }
 
+    if (this.generateStep < 2) {
       this.number1 = randomNumber(1, 9);
       this.txtNumber1.setText(numberToDigits(this.number1, 1).join(' '));
+    }
+
+    if (this.generateStep < 3) {
       this.number2 = randomNumber(1, 9);
       this.txtNumber2.setText(numberToDigits(this.number2, 1).join(' '));
+    }
+
+    if (this.generateStep < 4) {
       this.number3 = randomNumber(1, 9);
       this.txtNumber3.setText(numberToDigits(this.number3, 1).join(' '));
+    }
+
+    if (this.generateStep < 5) {
       this.number4 = randomNumber(1, 9);
       this.txtNumber4.setText(numberToDigits(this.number4, 1).join(' '));
+    }
+
+    if (this.generateStep < 6) {
       this.number5 = randomNumber(2, 4) * 5;
       this.txtNumber5.setText(numberToDigits(this.number5, 2).join(' '));
+    }
+
+    if (this.generateStep < 7) {
       this.number6 = randomNumber(1, 4) * 25;
       this.txtNumber6.setText(numberToDigits(this.number6, 3).map((el, idx) => idx > 0 || el > 0 ? el : ' ').join(' '));
     }
+
+    if (this.generateStep >= 7) {
+      this.state = State.StateGame;
+    }
+  }
+
+  createEvents(): void {
+    this.input.keyboard.on('keydown-SPACE', () => {
+      console.log('dva');
+      switch (this.state) {
+        case State.StateGenerate:
+          this.generateStep++;
+          break;
+      }
+    });
   }
 
   createNumbers(): void {
