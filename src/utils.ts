@@ -17,3 +17,15 @@ export const numberToDigits = (num: number, minDigits: number = 0): number[] => 
 
   return res;
 }
+
+export const isValidKey = (key: string) => {
+  if (!key.length || key.length > 1) {
+    return false;
+  }
+
+  const char = key.at(0);
+
+  const validChars = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '+', '-', '*', '/', '(', ')'];
+
+  return validChars.includes(char);
+}

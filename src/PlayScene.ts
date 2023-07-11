@@ -1,6 +1,6 @@
 import Phaser from "phaser";
 import { Colors } from "./Colors";
-import { numberToDigits, randomNumber } from "./utils";
+import { isValidKey, numberToDigits, randomNumber } from "./utils";
 
 enum State {
   StateGenerate,
@@ -30,6 +30,9 @@ class PlayScene extends Phaser.Scene {
 
   private state: State = State.StateGenerate;
   private generateStep: number = 0;
+
+  private expression: string = '';
+  private txtExpression: Phaser.GameObjects.Text;
 
   constructor() {
     super('PlayScene');
@@ -114,11 +117,27 @@ class PlayScene extends Phaser.Scene {
 
   createEvents(): void {
     this.input.keyboard.on('keydown-SPACE', () => {
-      switch (this.state) {
-        case State.StateGenerate:
-          this.generateStep++;
-          break;
+      if (this.state !== State.StateGenerate) {
+        return;
       }
+
+      this.generateStep++;
+    });
+
+    this.input.keyboard.on('keydown', (event: KeyboardEvent) => {
+      if (this.state !== State.StateGame) {
+        return;
+      }
+
+      if (event.key === 'Enter') {
+        this.expression += '=';
+      } else if (event.key === 'Backspace') {
+        this.expression = this.expression.slice(0, -1);
+      } else if (isValidKey(event.key)) {
+        this.expression += event.key;
+      }
+
+      this.txtExpression.setText(this.expression);
     });
   }
 
@@ -133,9 +152,16 @@ class PlayScene extends Phaser.Scene {
   }
 
   createResultBox(): void {
+    const textStyle: Phaser.Types.GameObjects.Text.TextStyle = {
+      fontSize: 28,
+      color: Colors.toString(Colors.a),
+    }
+
     this.add.rectangle(50, 300, this.gameWidth - 100, 300, Colors.d)
       .setStrokeStyle(1, Colors.a)
       .setOrigin(0, 0);
+
+    this.txtExpression = this.add.text(70, 320, '', textStyle).setOrigin(0, 0);
   }
 
   createNumberBox(x: number, y: number, len: number): Phaser.GameObjects.Text {
